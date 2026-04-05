@@ -1,73 +1,23 @@
-# React + TypeScript + Vite
+# Talento Correntino
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Talento Correntino** es una plataforma de comercio electrónico pensada para **productores y artesanos locales**. Su propósito es dar visibilidad a quienes elaboran en la provincia y **acercar sus productos a compradores de toda Argentina**, sin quedar limitados al mercado cercano.
 
-Currently, two official plugins are available:
+## Qué hace
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Reúne en un solo lugar ofertas de **producción regional**: artesanías, cerámica, madera, textiles, arte y otros rubros típicos del trabajo independiente y de taller.
+- Permite que cada productor **muestre su catálogo** y coordine ventas con clientes de distintas zonas del país.
+- Refuerza la idea de que lo hecho en Corrientes y en el **litoral** puede circular nacionalmente, con una experiencia de compra clara y moderna.
 
-## React Compiler
+## Propuesta de valor
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Para el **productor**, es una vitrina digital y un canal para ampliar su alcance más allá de ferias y venta directa local.
 
-## Expanding the ESLint configuration
+Para el **comprador**, es la posibilidad de descubrir piezas auténticas, con historia y oficio, **desde cualquier punto del país**, con la comodidad de un ecommerce.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Eslogan
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+*De tu provincia a toda la Argentina* — resume el puente entre el origen local y el alcance nacional que la plataforma busca ofrecer.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+*Este repositorio contiene un prototipo frontend de la tienda y del panel de gestión; la descripción anterior refiere al modelo de negocio y la visión del producto.*
