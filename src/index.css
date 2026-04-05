@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  --color-aurora-orange: #ff6b35;
+  --color-aurora-yellow: #ffd93d;
+  --color-aurora-pink: #ff6b9d;
+  --color-aurora-fuchsia: #e040fb;
+  --color-aurora-violet: #7c4dff;
+  --color-aurora-turquoise: #26c6da;
+  --color-aurora-green: #69f0ae;
+  --color-aurora-sky: #82b1ff;
+  --color-aurora-cream: #fff8f3;
+  --color-aurora-ink: #1a1523;
+  --color-aurora-muted: #5c5568;
+
+  --shadow-card: 0 4px 24px -4px rgb(26 21 35 / 0.12);
+  --shadow-card-hover: 0 12px 40px -8px rgb(26 21 35 / 0.18);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-aurora-cream text-aurora-ink antialiased font-sans;
+  }
+  #root {
+    @apply min-h-svh w-full;
+  }
+}
