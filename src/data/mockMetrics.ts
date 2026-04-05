@@ -18,9 +18,8 @@ export const REVENUE_COMPARE_MONTHS = [
 ]
 
 export const CATEGORY_SHARE = [
-  { name: 'Cerámica', value: 28 },
-  { name: 'Madera', value: 20 },
-  { name: 'Pintura', value: 18 },
-  { name: 'Textil', value: 19 },
-  { name: 'Arte', value: 15 },
+  { name: 'Cerámica', value: 25 },
+  { name: 'Madera', value: 25 },
+  { name: 'Textil', value: 25 },
+  { name: 'Arte', value: 25 },
 ]

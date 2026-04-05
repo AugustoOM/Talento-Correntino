@@ -72,7 +72,7 @@ export const useOrderStore = create<OrderState>()(
       clearLastCompleted: () => set({ lastCompleted: null }),
     }),
     {
-      name: 'aurora-orders-v2',
+      name: 'aurora-orders-v4',
       partialize: (s) => ({ orders: s.orders }),
     },
   ),

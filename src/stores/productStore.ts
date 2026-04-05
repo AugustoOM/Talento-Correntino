@@ -30,7 +30,7 @@ export const useProductStore = create<ProductState>()(
           ),
         }),
     }),
-    { name: 'aurora-products-v2' },
+    { name: 'aurora-products-v4' },
   ),
 )
 
