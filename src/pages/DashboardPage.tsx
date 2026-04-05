@@ -69,48 +69,63 @@ export function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          title="Ventas del día"
-          value={String(m.salesDay)}
-          subtitle="Pedidos no cancelados"
-          icon={Calendar}
-          accent="bg-gradient-to-br from-orange-500 to-amber-500"
-        />
-        <MetricCard
-          title="Ventas del mes"
-          value={String(m.salesMonth)}
-          icon={TrendingUp}
-          accent="bg-gradient-to-br from-violet-600 to-fuchsia-500"
-        />
-        <MetricCard
-          title="Ventas del año"
-          value={String(m.salesYear)}
-          icon={TrendingUp}
-          accent="bg-gradient-to-br from-cyan-500 to-teal-500"
-        />
-        <MetricCard
-          title="Ingresos del día"
-          value={formatARS(m.revDay)}
-          icon={TrendingUp}
-          accent="bg-gradient-to-br from-emerald-500 to-green-600"
-        />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Ventas (cantidad de pedidos)
+          </p>
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+            <MetricCard
+              title="Ventas del día"
+              value={String(m.salesDay)}
+              subtitle="Pedidos no cancelados"
+              icon={Calendar}
+              accent="bg-gradient-to-br from-orange-500 to-amber-500"
+            />
+            <MetricCard
+              title="Ventas del mes"
+              value={String(m.salesMonth)}
+              icon={TrendingUp}
+              accent="bg-gradient-to-br from-violet-600 to-fuchsia-500"
+            />
+            <MetricCard
+              title="Ventas del año"
+              value={String(m.salesYear)}
+              icon={TrendingUp}
+              accent="bg-gradient-to-br from-cyan-500 to-teal-500"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Ingresos
+          </p>
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+            <MetricCard
+              title="Ingresos del día"
+              value={formatARS(m.revDay)}
+              icon={TrendingUp}
+              accent="bg-gradient-to-br from-emerald-500 to-green-600"
+            />
+            <MetricCard
+              title="Ingresos del mes"
+              value={formatARS(m.revMonth)}
+              icon={TrendingUp}
+              accent="bg-gradient-to-br from-sky-500 to-blue-600"
+            />
+            <MetricCard
+              title="Ingresos del año"
+              value={formatARS(m.revYear)}
+              icon={TrendingUp}
+              accent="bg-gradient-to-br from-indigo-500 to-violet-600"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <MetricCard
-          title="Ingresos del mes"
-          value={formatARS(m.revMonth)}
-          icon={TrendingUp}
-          accent="bg-gradient-to-br from-sky-500 to-blue-600"
-        />
-        <MetricCard
-          title="Ingresos del año"
-          value={formatARS(m.revYear)}
-          icon={TrendingUp}
-          accent="bg-gradient-to-br from-indigo-500 to-violet-600"
-        />
-        <Card className="sm:col-span-2 xl:col-span-1">
+      <div className="mt-4 max-w-md">
+        <Card>
           <CardContent className="p-5">
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -130,7 +145,7 @@ export function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <h2 className="font-display text-lg font-bold text-slate-900">
-              Tendencia de ventas (mock)
+              Tendencia de ventas
             </h2>
             <p className="text-xs text-slate-500">
               Serie ilustrativa en miles de ARS
