@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Area,
   AreaChart,
@@ -9,13 +11,13 @@ import {
 import { Package, TrendingUp, Calendar } from 'lucide-react'
 import { SellerPageShell } from '../components/layout/SellerPageShell'
 import { Card, CardContent } from '../components/ui/Card'
-import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { formatARS, formatDateTime } from '../lib/format'
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics'
 import { SALES_BY_DAY_OF_MONTH } from '../data/mockMetrics'
 import { useProductStore } from '../stores/productStore'
 import { useOrderStore } from '../stores/orderStore'
+import type { Order, OrderStatus } from '../types'
 
 function MetricCard({
   title,
@@ -54,17 +56,118 @@ function MetricCard({
   )
 }
 
+function sortOrdersByDateDesc(orders: Order[]) {
+  return [...orders].sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
+}
+
+function OrderStatusCard({
+  title,
+  accent,
+  orders,
+  emptyLabel,
+  column,
+  setOrderStatus,
+}: {
+  title: string
+  accent: string
+  orders: Order[]
+  emptyLabel: string
+  column: 'pendiente' | 'confirmado' | 'enviado'
+  setOrderStatus?: (orderId: string, status: OrderStatus) => void
+}) {
+  return (
+    <Card className="flex flex-col overflow-hidden">
+      <div
+        className={`border-b border-slate-100 px-4 py-3 ${accent}`}
+      >
+        <h3 className="font-display text-sm font-bold text-slate-900">
+          {title}
+        </h3>
+        <p className="text-xs text-slate-600">{orders.length} pedido(s)</p>
+      </div>
+      <CardContent className="max-h-[min(420px,55vh)] flex-1 overflow-y-auto p-3">
+        {orders.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-500">{emptyLabel}</p>
+        ) : (
+          <ul className="space-y-3">
+            {orders.map((o) => (
+              <li
+                key={o.id}
+                className="rounded-xl border border-slate-100 bg-slate-50/90 p-3 text-sm"
+              >
+                <p className="truncate font-medium text-slate-900">
+                  {o.customerName}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {formatDateTime(o.createdAt)}
+                </p>
+                <p className="mt-1 line-clamp-2 text-xs text-slate-600">
+                  {o.lines
+                    .map((l) =>
+                      l.quantity > 1
+                        ? `${l.productName} ×${l.quantity}`
+                        : l.productName,
+                    )
+                    .join(' · ')}
+                </p>
+                <p className="mt-2 font-semibold text-slate-900">
+                  {formatARS(o.total)}
+                </p>
+                {column === 'pendiente' && setOrderStatus ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="mt-2 w-full"
+                    onClick={() => setOrderStatus(o.id, 'confirmado')}
+                  >
+                    Confirmar
+                  </Button>
+                ) : null}
+                {column === 'confirmado' && setOrderStatus ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="mt-2 w-full"
+                    onClick={() => setOrderStatus(o.id, 'enviado')}
+                  >
+                    Marcar enviado
+                  </Button>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 export function DashboardPage() {
   const m = useDashboardMetrics()
   const products = useProductStore((s) => s.products)
+  const orders = useOrderStore((s) => s.orders)
   const setOrderStatus = useOrderStore((s) => s.setOrderStatus)
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 5)
-  const recentNonSent = m.recentOrders.filter((o) => o.status !== 'enviado')
-  const recentSent = m.recentOrders.filter((o) => o.status === 'enviado')
-  const recentSorted = [
-    ...recentNonSent.filter((o) => o.status === 'pendiente'),
-    ...recentNonSent.filter((o) => o.status !== 'pendiente'),
-  ]
+
+  const { pendientes, confirmados, enviados } = useMemo(() => {
+    const active = orders.filter((o) => o.status !== 'cancelado')
+    return {
+      pendientes: sortOrdersByDateDesc(
+        active.filter((o) => o.status === 'pendiente'),
+      ),
+      confirmados: sortOrdersByDateDesc(
+        active.filter((o) => o.status === 'confirmado'),
+      ),
+      enviados: sortOrdersByDateDesc(
+        active.filter((o) => o.status === 'enviado'),
+      ),
+    }
+  }, [orders])
 
   return (
     <SellerPageShell title="Dashboard">
@@ -150,7 +253,52 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-8">
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-display text-lg font-bold text-slate-900">
+              Pedidos por estado
+            </h2>
+            <p className="text-sm text-slate-600">
+              Pendiente, confirmado y enviado. Los pedidos cancelados no se
+              muestran aquí.
+            </p>
+          </div>
+          <Link
+            to="/vendedor/ventas"
+            className="text-sm font-semibold text-violet-700 hover:underline"
+          >
+            Ver historial completo →
+          </Link>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-3">
+          <OrderStatusCard
+            title="Pendiente"
+            accent="bg-amber-50"
+            orders={pendientes}
+            emptyLabel="No hay pedidos pendientes."
+            column="pendiente"
+            setOrderStatus={setOrderStatus}
+          />
+          <OrderStatusCard
+            title="Confirmado"
+            accent="bg-violet-50"
+            orders={confirmados}
+            emptyLabel="No hay pedidos confirmados."
+            column="confirmado"
+            setOrderStatus={setOrderStatus}
+          />
+          <OrderStatusCard
+            title="Enviado"
+            accent="bg-emerald-50"
+            orders={enviados}
+            emptyLabel="Aún no hay envíos registrados."
+            column="enviado"
+          />
+        </div>
+      </div>
+
+      <div className="mt-8">
         <Card>
           <CardContent className="p-5">
             <h2 className="font-display text-lg font-bold text-slate-900">
@@ -159,7 +307,7 @@ export function DashboardPage() {
             <p className="text-xs text-slate-500">
               Serie ilustrativa en miles de ARS
             </p>
-            <div className="mt-4 h-56 w-full">
+            <div className="mt-4 h-56 w-full max-w-3xl">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={SALES_BY_DAY_OF_MONTH}>
                   <defs>
@@ -186,127 +334,6 @@ export function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-5">
-            <h2 className="font-display text-lg font-bold text-slate-900">
-              Últimos pedidos
-            </h2>
-            <ul className="mt-4 space-y-3">
-              {recentSorted.map((o) => (
-                <li
-                  key={o.id}
-                  className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-sm"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-slate-900">
-                      {o.customerName}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {formatDateTime(o.createdAt)}
-                    </p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-700">
-                      <span className="font-medium text-slate-600">Productos: </span>
-                      {o.lines
-                        .map((l) =>
-                          l.quantity > 1
-                            ? `${l.productName} ×${l.quantity}`
-                            : l.productName,
-                        )
-                        .join(' · ')}
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="font-semibold text-slate-900">
-                      {formatARS(o.total)}
-                    </p>
-                    <Badge
-                      variant={
-                        o.status === 'cancelado'
-                          ? 'danger'
-                          : o.status === 'enviado'
-                            ? 'success'
-                            : 'warning'
-                      }
-                      className="mt-1"
-                    >
-                      {o.status}
-                    </Badge>
-                    {o.status === 'pendiente' ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="mt-2 w-full"
-                        onClick={() => setOrderStatus(o.id, 'confirmado')}
-                      >
-                        Confirmar
-                      </Button>
-                    ) : null}
-                    {o.status === 'confirmado' ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="mt-2 w-full"
-                        onClick={() => setOrderStatus(o.id, 'enviado')}
-                      >
-                        Enviar
-                      </Button>
-                    ) : null}
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {recentSent.length ? (
-              <>
-                <div className="mt-6 border-t border-slate-200 pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Enviados
-                  </p>
-                </div>
-                <ul className="mt-3 space-y-3">
-                  {recentSent.map((o) => (
-                    <li
-                      key={o.id}
-                      className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2.5 text-sm"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium text-slate-900">
-                          {o.customerName}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {formatDateTime(o.createdAt)}
-                        </p>
-                        <p className="mt-1.5 text-xs leading-relaxed text-slate-700">
-                          <span className="font-medium text-slate-600">
-                            Productos:{' '}
-                          </span>
-                          {o.lines
-                            .map((l) =>
-                              l.quantity > 1
-                                ? `${l.productName} ×${l.quantity}`
-                                : l.productName,
-                            )
-                            .join(' · ')}
-                        </p>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <p className="font-semibold text-slate-900">
-                          {formatARS(o.total)}
-                        </p>
-                        <Badge variant="success" className="mt-1">
-                          enviado
-                        </Badge>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
           </CardContent>
         </Card>
       </div>
