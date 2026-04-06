@@ -10,10 +10,12 @@ import { Package, TrendingUp, Calendar } from 'lucide-react'
 import { SellerPageShell } from '../components/layout/SellerPageShell'
 import { Card, CardContent } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
+import { Button } from '../components/ui/Button'
 import { formatARS, formatDateTime } from '../lib/format'
 import { useDashboardMetrics } from '../hooks/useDashboardMetrics'
 import { SALES_BY_DAY_OF_MONTH } from '../data/mockMetrics'
 import { useProductStore } from '../stores/productStore'
+import { useOrderStore } from '../stores/orderStore'
 
 function MetricCard({
   title,
@@ -55,7 +57,14 @@ function MetricCard({
 export function DashboardPage() {
   const m = useDashboardMetrics()
   const products = useProductStore((s) => s.products)
+  const setOrderStatus = useOrderStore((s) => s.setOrderStatus)
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 5)
+  const recentNonSent = m.recentOrders.filter((o) => o.status !== 'enviado')
+  const recentSent = m.recentOrders.filter((o) => o.status === 'enviado')
+  const recentSorted = [
+    ...recentNonSent.filter((o) => o.status === 'pendiente'),
+    ...recentNonSent.filter((o) => o.status !== 'pendiente'),
+  ]
 
   return (
     <SellerPageShell title="Dashboard">
@@ -186,7 +195,7 @@ export function DashboardPage() {
               Últimos pedidos
             </h2>
             <ul className="mt-4 space-y-3">
-              {m.recentOrders.map((o) => (
+              {recentSorted.map((o) => (
                 <li
                   key={o.id}
                   className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-sm"
@@ -225,10 +234,79 @@ export function DashboardPage() {
                     >
                       {o.status}
                     </Badge>
+                    {o.status === 'pendiente' ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="mt-2 w-full"
+                        onClick={() => setOrderStatus(o.id, 'confirmado')}
+                      >
+                        Confirmar
+                      </Button>
+                    ) : null}
+                    {o.status === 'confirmado' ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="mt-2 w-full"
+                        onClick={() => setOrderStatus(o.id, 'enviado')}
+                      >
+                        Enviar
+                      </Button>
+                    ) : null}
                   </div>
                 </li>
               ))}
             </ul>
+
+            {recentSent.length ? (
+              <>
+                <div className="mt-6 border-t border-slate-200 pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Enviados
+                  </p>
+                </div>
+                <ul className="mt-3 space-y-3">
+                  {recentSent.map((o) => (
+                    <li
+                      key={o.id}
+                      className="flex items-start justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2.5 text-sm"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-slate-900">
+                          {o.customerName}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {formatDateTime(o.createdAt)}
+                        </p>
+                        <p className="mt-1.5 text-xs leading-relaxed text-slate-700">
+                          <span className="font-medium text-slate-600">
+                            Productos:{' '}
+                          </span>
+                          {o.lines
+                            .map((l) =>
+                              l.quantity > 1
+                                ? `${l.productName} ×${l.quantity}`
+                                : l.productName,
+                            )
+                            .join(' · ')}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="font-semibold text-slate-900">
+                          {formatARS(o.total)}
+                        </p>
+                        <Badge variant="success" className="mt-1">
+                          enviado
+                        </Badge>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </CardContent>
         </Card>
       </div>

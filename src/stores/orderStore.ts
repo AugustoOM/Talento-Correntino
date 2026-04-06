@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CheckoutPayload, Order, OrderLine } from '../types'
+import type { CheckoutPayload, Order, OrderLine, OrderStatus } from '../types'
 import { MOCK_ORDERS_INITIAL } from '../data/mockOrders'
 import { useCartStore } from './cartStore'
 import { useProductStore } from './productStore'
@@ -15,6 +15,7 @@ interface OrderState {
   orders: Order[]
   lastCompleted: LastOrderPayload | null
   placeOrder: (payload: CheckoutPayload) => LastOrderPayload
+  setOrderStatus: (orderId: string, status: OrderStatus) => void
   clearLastCompleted: () => void
 }
 
@@ -73,6 +74,18 @@ export const useOrderStore = create<OrderState>()(
         })
         useCartStore.getState().clear()
         return result
+      },
+      setOrderStatus: (orderId, status) => {
+        set((state) => {
+          const orders = state.orders.map((o) =>
+            o.id === orderId ? { ...o, status } : o,
+          )
+          const lastCompleted =
+            state.lastCompleted?.order.id === orderId
+              ? { ...state.lastCompleted, order: { ...state.lastCompleted.order, status } }
+              : state.lastCompleted
+          return { orders, lastCompleted }
+        })
       },
       clearLastCompleted: () => set({ lastCompleted: null }),
     }),
