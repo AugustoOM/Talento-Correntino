@@ -33,7 +33,10 @@ export interface OrderLine {
   unitPrice: number
 }
 
-export type PaymentMethod = 'efectivo_transferencia' | 'tarjeta_debito'
+export type PaymentMethod =
+  | 'efectivo_transferencia'
+  | 'tarjeta_debito_credito'
+  | 'mercado_pago'
 
 /** Sin número completo: solo lo necesario para el pedido y la UI. */
 export interface DebitCardSnapshot {

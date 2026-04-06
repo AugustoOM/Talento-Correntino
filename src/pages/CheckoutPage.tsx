@@ -21,6 +21,7 @@ import {
   validateCardholder,
   validateDebitCvv,
 } from '../lib/cardValidation'
+import { isCardPayment } from '../lib/paymentLabels'
 
 const PM_OPTIONS: { value: PaymentMethod; title: string; hint: string }[] = [
   {
@@ -29,9 +30,14 @@ const PM_OPTIONS: { value: PaymentMethod; title: string; hint: string }[] = [
     hint: 'Coordinás el pago como hasta ahora (WhatsApp).',
   },
   {
-    value: 'tarjeta_debito',
-    title: 'Tarjeta de débito',
-    hint: 'Completá los datos de la tarjeta; validamos el número antes de confirmar.',
+    value: 'mercado_pago',
+    title: 'Mercado Pago',
+    hint: 'Te enviamos el link de pago o el alias por WhatsApp para abonar con Mercado Pago.',
+  },
+  {
+    value: 'tarjeta_debito_credito',
+    title: 'Tarjeta de débito o crédito',
+    hint: 'Débito o crédito Visa, Mastercard u otras. Validamos el número antes de confirmar.',
   },
 ]
 
@@ -71,7 +77,7 @@ export function CheckoutPage() {
     if (!phone.trim()) next.phone = 'Requerido'
     if (!address.trim()) next.address = 'Requerido'
 
-    if (paymentMethod === 'tarjeta_debito') {
+    if (isCardPayment(paymentMethod)) {
       if (!validateCardholder(cardholderName)) {
         next.cardholderName = 'Ingresá el nombre como figura en la tarjeta'
       }
@@ -104,7 +110,7 @@ export function CheckoutPage() {
       notes: notes.trim(),
       paymentMethod,
       debitCard:
-        paymentMethod === 'tarjeta_debito' && exp
+        isCardPayment(paymentMethod) && exp
           ? {
               cardholderName: cardholderName.trim(),
               dni: normalizeDni(cardDni),
@@ -219,10 +225,10 @@ export function CheckoutPage() {
             </div>
           </fieldset>
 
-          {paymentMethod === 'tarjeta_debito' ? (
+          {isCardPayment(paymentMethod) ? (
             <div className="mt-8 space-y-4 border-t border-violet-100 pt-8">
               <h3 className="text-sm font-semibold text-aurora-ink">
-                Datos de la tarjeta de débito
+                Datos de la tarjeta (débito o crédito)
               </h3>
               <p className="text-xs text-aurora-muted">
                 El número se valida con algoritmo Luhn. No guardamos el número

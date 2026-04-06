@@ -4,6 +4,7 @@ import type { CheckoutPayload, Order, OrderLine } from '../types'
 import { MOCK_ORDERS_INITIAL } from '../data/mockOrders'
 import { useCartStore } from './cartStore'
 import { useProductStore } from './productStore'
+import { isCardPayment } from '../lib/paymentLabels'
 
 interface LastOrderPayload {
   order: Order
@@ -56,10 +57,9 @@ export const useOrderStore = create<OrderState>()(
           status: 'pendiente',
           isGuest: true,
           paymentMethod: payload.paymentMethod,
-          debitCard:
-            payload.paymentMethod === 'tarjeta_debito'
-              ? payload.debitCard
-              : undefined,
+          debitCard: isCardPayment(payload.paymentMethod)
+            ? payload.debitCard
+            : undefined,
         }
         const simulatedAt = new Intl.DateTimeFormat('es-AR', {
           dateStyle: 'full',
@@ -77,7 +77,7 @@ export const useOrderStore = create<OrderState>()(
       clearLastCompleted: () => set({ lastCompleted: null }),
     }),
     {
-      name: 'aurora-orders-v4',
+      name: 'aurora-orders-v5',
       partialize: (s) => ({ orders: s.orders }),
     },
   ),

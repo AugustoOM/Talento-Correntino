@@ -2,6 +2,7 @@ import { SellerPageShell } from '../components/layout/SellerPageShell'
 import { Card, CardContent } from '../components/ui/Card'
 import { Badge } from '../components/ui/Badge'
 import { formatARS, formatDateTime } from '../lib/format'
+import { paymentMethodShort } from '../lib/paymentLabels'
 import { useOrderStore } from '../stores/orderStore'
 import { useFilteredOrders } from '../hooks/useSalesFilter'
 
@@ -75,9 +76,7 @@ export function SellerSalesPage() {
                   <p className="font-semibold text-slate-900">{o.id}</p>
                   <p className="text-slate-700">{o.customerName}</p>
                   <p className="text-xs text-slate-500">
-                    {o.paymentMethod === 'tarjeta_debito'
-                      ? 'Pago: débito'
-                      : 'Pago: efectivo / transferencia'}
+                    Pago: {paymentMethodShort(o.paymentMethod)}
                   </p>
                   <p className="text-xs text-slate-500">
                     {formatDateTime(o.createdAt)}
@@ -134,9 +133,7 @@ export function SellerSalesPage() {
                 <td className="px-4 py-3">
                   <p className="font-medium text-slate-900">{o.customerName}</p>
                   <p className="text-xs text-slate-500">
-                    {o.paymentMethod === 'tarjeta_debito'
-                      ? 'Débito'
-                      : 'Efectivo / transf.'}
+                    {paymentMethodShort(o.paymentMethod)}
                   </p>
                 </td>
                 <td className="px-4 py-3 text-slate-600">

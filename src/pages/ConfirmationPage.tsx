@@ -5,6 +5,7 @@ import { Container } from '../components/ui/Container'
 import { Button } from '../components/ui/Button'
 import { Card, CardContent } from '../components/ui/Card'
 import { formatARS } from '../lib/format'
+import { isCardPayment, paymentMethodLabel } from '../lib/paymentLabels'
 import { useOrderStore } from '../stores/orderStore'
 
 export function ConfirmationPage() {
@@ -62,12 +63,10 @@ export function ConfirmationPage() {
           <p>
             <span className="text-aurora-muted">Pago:</span>{' '}
             <span className="font-medium">
-              {order.paymentMethod === 'tarjeta_debito'
-                ? 'Tarjeta de débito'
-                : 'Efectivo o transferencia'}
+              {paymentMethodLabel(order.paymentMethod)}
             </span>
           </p>
-          {order.paymentMethod === 'tarjeta_debito' && order.debitCard ? (
+          {isCardPayment(order.paymentMethod) && order.debitCard ? (
             <>
               <p>
                 <span className="text-aurora-muted">DNI titular:</span>{' '}
