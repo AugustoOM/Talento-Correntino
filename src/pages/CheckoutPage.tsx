@@ -7,6 +7,7 @@ import { Textarea } from '../components/ui/Textarea'
 import { Card } from '../components/ui/Card'
 import { formatARS } from '../lib/format'
 import { useCartTotals } from '../stores/cartStore'
+import { useProductStore } from '../stores/productStore'
 import { useOrderStore } from '../stores/orderStore'
 import type { PaymentMethod } from '../types'
 import {
@@ -44,6 +45,7 @@ const PM_OPTIONS: { value: PaymentMethod; title: string; hint: string }[] = [
 export function CheckoutPage() {
   const navigate = useNavigate()
   const { subtotal, lines } = useCartTotals()
+  const products = useProductStore((s) => s.products)
   const placeOrder = useOrderStore((s) => s.placeOrder)
 
   const [name, setName] = useState('')
@@ -296,14 +298,58 @@ export function CheckoutPage() {
         <div>
           <Card className="p-6 sm:p-8">
             <h2 className="font-display text-xl font-bold text-aurora-ink">
-              Resumen
+              Resumen del pedido
             </h2>
-            <p className="mt-2 text-3xl font-bold text-aurora-ink">
-              {formatARS(subtotal)}
+            <p className="mt-1 text-sm text-aurora-muted">
+              Revisá los productos antes de confirmar.
             </p>
-            <p className="mt-2 text-sm text-aurora-muted">
-              {lines.length} ítem(s) en tu pedido. Validación por WhatsApp.
+
+            <ul className="mt-6 space-y-0 border-t border-violet-100">
+              {lines.map((line) => {
+                const p = products.find((x) => x.id === line.productId)
+                if (!p) return null
+                const lineTotal = p.price * line.quantity
+                return (
+                  <li
+                    key={line.productId}
+                    className="flex gap-3 border-b border-violet-100 py-4 last:border-b-0"
+                  >
+                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                      <img
+                        src={p.imageUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold leading-snug text-aurora-ink">
+                        {p.name}
+                      </p>
+                      <p className="mt-0.5 text-sm text-aurora-muted">
+                        {line.quantity} × {formatARS(p.price)}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-right font-semibold tabular-nums text-aurora-ink">
+                      {formatARS(lineTotal)}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+
+            <div className="mt-6 flex items-baseline justify-between gap-4 border-t border-violet-200 pt-4">
+              <span className="font-display text-lg font-bold text-aurora-ink">
+                Total
+              </span>
+              <span className="font-display text-2xl font-bold text-aurora-ink">
+                {formatARS(subtotal)}
+              </span>
+            </div>
+            <p className="mt-3 text-xs text-aurora-muted">
+              {lines.reduce((a, l) => a + l.quantity, 0)} unidad(es) en{' '}
+              {lines.length} producto(s). Coordinación por WhatsApp.
             </p>
+
             <Button type="submit" className="mt-8 w-full" size="lg">
               Confirmar compra
             </Button>
