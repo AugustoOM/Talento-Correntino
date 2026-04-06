@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { GradientBackdrop } from '../ui/GradientBackdrop'
 import { PublicNavbar } from './PublicNavbar'
 import { PublicFooter } from './PublicFooter'
+import { CartAddModal } from '../shop/CartAddModal'
 
 export function PublicLayout() {
   return (
@@ -12,6 +13,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <PublicFooter />
+      <CartAddModal />
     </div>
   )
 }

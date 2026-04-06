@@ -27,7 +27,7 @@ const PM_OPTIONS: { value: PaymentMethod; title: string; hint: string }[] = [
   {
     value: 'efectivo_transferencia',
     title: 'Efectivo o transferencia',
-    hint: 'Coordinás el pago como hasta ahora (WhatsApp).',
+    hint: 'Coordinamos el pago por WhatsApp.',
   },
   {
     value: 'mercado_pago',

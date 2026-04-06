@@ -6,6 +6,7 @@ import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { useCartStore } from '../../stores/cartStore'
+import { useCartAddModalStore } from '../../stores/cartAddModalStore'
 
 interface ProductCardProps {
   product: Product
@@ -13,6 +14,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const add = useCartStore((s) => s.add)
+  const showAfterAdd = useCartAddModalStore((s) => s.showAfterAdd)
   const low = product.stock <= 5
 
   return (
@@ -55,6 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
             onClick={(e) => {
               e.preventDefault()
               add(product.id, 1)
+              showAfterAdd(product.name)
             }}
           >
             <ShoppingCart className="h-4 w-4" />

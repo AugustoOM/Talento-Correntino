@@ -11,12 +11,14 @@ import {
   getProductBySlugFromStore,
 } from '../stores/productStore'
 import { useCartStore } from '../stores/cartStore'
+import { useCartAddModalStore } from '../stores/cartAddModalStore'
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const products = useProductStore((s) => s.products)
   const product = slug ? getProductBySlugFromStore(products, slug) : undefined
   const add = useCartStore((s) => s.add)
+  const showAfterAdd = useCartAddModalStore((s) => s.showAfterAdd)
 
   const [amount, setAmount] = useState(1)
 
@@ -119,7 +121,11 @@ export function ProductDetailPage() {
               type="button"
               size="lg"
               disabled={product.stock === 0}
-              onClick={() => add(product.id, max === 0 ? 0 : safeAmount)}
+              onClick={() => {
+                const qty = max === 0 ? 0 : safeAmount
+                add(product.id, qty)
+                if (qty > 0) showAfterAdd(product.name)
+              }}
               className="gap-2"
             >
               <ShoppingCart className="h-5 w-5" />
