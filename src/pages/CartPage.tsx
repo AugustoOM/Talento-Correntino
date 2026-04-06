@@ -98,7 +98,8 @@ export function CartPage() {
               {formatARS(subtotal)}
             </p>
             <p className="mt-2 text-xs text-aurora-muted">
-              Envío a coordinar por WhatsApp. Sin pago online en este prototipo.
+              Envío y pago a coordinar por WhatsApp; en checkout podés elegir
+              efectivo/transferencia o datos de débito.
             </p>
             <Link to="/checkout" className="mt-6 block">
               <Button type="button" className="w-full" size="lg">

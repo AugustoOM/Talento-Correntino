@@ -33,6 +33,18 @@ export interface OrderLine {
   unitPrice: number
 }
 
+export type PaymentMethod = 'efectivo_transferencia' | 'tarjeta_debito'
+
+/** Sin número completo: solo lo necesario para el pedido y la UI. */
+export interface DebitCardSnapshot {
+  cardholderName: string
+  /** DNI del titular, solo dígitos. */
+  dni: string
+  last4: string
+  expiryMonth: string
+  expiryYear: string
+}
+
 export interface Order {
   id: string
   customerName: string
@@ -44,6 +56,8 @@ export interface Order {
   createdAt: string
   status: OrderStatus
   isGuest?: boolean
+  paymentMethod?: PaymentMethod
+  debitCard?: DebitCardSnapshot
 }
 
 export interface CheckoutPayload {
@@ -51,6 +65,8 @@ export interface CheckoutPayload {
   phone: string
   address: string
   notes: string
+  paymentMethod: PaymentMethod
+  debitCard?: DebitCardSnapshot
 }
 
 export interface SalesFilter {

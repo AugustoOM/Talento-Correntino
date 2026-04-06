@@ -60,6 +60,32 @@ export function ConfirmationPage() {
             </p>
           ) : null}
           <p>
+            <span className="text-aurora-muted">Pago:</span>{' '}
+            <span className="font-medium">
+              {order.paymentMethod === 'tarjeta_debito'
+                ? 'Tarjeta de débito'
+                : 'Efectivo o transferencia'}
+            </span>
+          </p>
+          {order.paymentMethod === 'tarjeta_debito' && order.debitCard ? (
+            <>
+              <p>
+                <span className="text-aurora-muted">DNI titular:</span>{' '}
+                <span className="font-medium">
+                  {order.debitCard.dni ?? '—'}
+                </span>
+              </p>
+              <p>
+                <span className="text-aurora-muted">Tarjeta:</span>{' '}
+                <span className="font-medium">
+                  {order.debitCard.cardholderName} · ••••{' '}
+                  {order.debitCard.last4} ({order.debitCard.expiryMonth}/
+                  {order.debitCard.expiryYear})
+                </span>
+              </p>
+            </>
+          ) : null}
+          <p>
             <span className="text-aurora-muted">Total:</span>{' '}
             <span className="font-semibold text-aurora-ink">
               {formatARS(order.total)}

@@ -75,6 +75,11 @@ export function SellerSalesPage() {
                   <p className="font-semibold text-slate-900">{o.id}</p>
                   <p className="text-slate-700">{o.customerName}</p>
                   <p className="text-xs text-slate-500">
+                    {o.paymentMethod === 'tarjeta_debito'
+                      ? 'Pago: débito'
+                      : 'Pago: efectivo / transferencia'}
+                  </p>
+                  <p className="text-xs text-slate-500">
                     {formatDateTime(o.createdAt)}
                   </p>
                 </div>
@@ -126,8 +131,13 @@ export function SellerSalesPage() {
                 <td className="px-4 py-3 font-mono text-xs text-violet-700">
                   {o.id}
                 </td>
-                <td className="px-4 py-3 font-medium text-slate-900">
-                  {o.customerName}
+                <td className="px-4 py-3">
+                  <p className="font-medium text-slate-900">{o.customerName}</p>
+                  <p className="text-xs text-slate-500">
+                    {o.paymentMethod === 'tarjeta_debito'
+                      ? 'Débito'
+                      : 'Efectivo / transf.'}
+                  </p>
                 </td>
                 <td className="px-4 py-3 text-slate-600">
                   {formatDateTime(o.createdAt)}

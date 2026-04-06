@@ -55,6 +55,11 @@ export const useOrderStore = create<OrderState>()(
           createdAt: new Date().toISOString(),
           status: 'pendiente',
           isGuest: true,
+          paymentMethod: payload.paymentMethod,
+          debitCard:
+            payload.paymentMethod === 'tarjeta_debito'
+              ? payload.debitCard
+              : undefined,
         }
         const simulatedAt = new Intl.DateTimeFormat('es-AR', {
           dateStyle: 'full',
